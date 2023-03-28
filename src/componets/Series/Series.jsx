@@ -1,54 +1,50 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-import Data from "./sample.json";
-function Movie() {
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Data from "../Dummy_Api/sample.json";
+
+function Series() {
   // console.log(Data);
+
   const [item, setItem] = useState(Data.entries);
-  const [loading, setLoading] = useState(null);
   const [imageLoadError, setImageLoadError] = useState(true);
-  const [hasError, setError] = React.useState(false);
+  const [loading, setLoading] = useState(null);
+
+  const navigate = useNavigate();
+  console.log(navigate);
+
+  function seriesData() {
+    const updateSeriesData = item.filter((value) => {
+      return value.programType === "series";
+    });
+    setItem(updateSeriesData);
+    setLoading(updateSeriesData);
+  }
+
   useEffect(() => {
-    movieFunction();
+    seriesData();
+    seriesAssending();
   }, []);
 
-  const fallbackImage =
+  const byDefaultImg =
     "https://previews.123rf.com/images/briang77/briang771602/briang77160200065/51883561-movie-film-reel.jpg";
 
-  const numAssending = item.sort((a, b) => a.releaseYear - b.releaseYear);
-  // console.log("numAssending", numAssending);
+  const seriesAssending = () => {
+    let sortedItems = item.sort((p1, p2) =>
+      p1.releaseYear < p2.releaseYear
+        ? -1
+        : p1.releaseYear > p2.releaseYear
+        ? 1
+        : 0
+    );
+    console.log(sortedItems);
+  };
 
-  const nameAssending = item.sort(function (a, b) {
-    if (a.title < b.title) {
-      return -1;
-    }
-    if (a.title > b.title) {
-      return 1;
-    }
-    return 0;
-  });
-  // console.log("nameAssending", nameAssending);
-
-  // function movieFunction() {
-  //   const updateMovieData = item.filter((value) => {
-  //     return value.programType === "movie";
-  //   });
-  //   setItem(updateMovieData);
-  //   setLoading(true);
-  // }
-  function movieFunction(){
-    const updateMovieData = item.filter((value) => {
-      return value.programType === "movie";
-    });
-    setItem(updateMovieData);
-    setLoading(updateMovieData);
-  }
   return (
     <div>
       <blockquote className="blockquote text-center">
-        <h1 className="mb-0">Movies</h1>
+        <h1 className="mb-0">Series</h1>
       </blockquote>
       {loading ? (
-        // loader with ternary operators 
         <div
           className="container"
           style={{
@@ -67,11 +63,11 @@ function Movie() {
                   onError={(e) => {
                     if (imageLoadError) {
                       setImageLoadError(false);
-                      e.target.src = fallbackImage;
-                      // console.clear();
+                      e.target.src = byDefaultImg;
                     }
                   }}
                 />
+
                 <div className="card-body">
                   <p className="card-text">{ele.title}</p>
                 </div>
@@ -80,10 +76,9 @@ function Movie() {
           })}
         </div>
       ) : (
-        "Loading..."
+        <h3>Loading...</h3>
       )}
     </div>
   );
 }
-
-export default Movie;
+export default Series;
